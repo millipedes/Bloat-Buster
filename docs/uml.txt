@@ -1,0 +1,11 @@
+@startuml
+
+class file_graph {
+  {field} + graph : std::vector<file_graph>
+  {field} + check_extensions : std::vector<std::string>
+  {field} + potential_types : std::vector<std::string>
+  {field} + warn_circular : bool
+  {field} + regex_literal : std::string
+}
+
+@enduml
