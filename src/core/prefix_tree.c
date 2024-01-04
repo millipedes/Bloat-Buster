@@ -24,6 +24,18 @@ const char * pt_type_to_string(pt_type type) {
   }
 }
 
+uint32_t sizeof_pt_type(pt_type type) {
+  switch(type) {
+    case UINT8_T:    return sizeof(uint8_t);
+    case UINT16_T:   return sizeof(uint16_t);
+    case UINT32_T:   return sizeof(uint32_t);
+    case UINT64_T:   return sizeof(uint64_t);
+    case CHAR:       return sizeof(char);
+    case END_OF_SEQ:
+    default:         return 0;
+  }
+}
+
 prefix_tree * init_prefix_tree(pt_type type) {
   prefix_tree * pt = calloc(1, sizeof(struct PREFIX_TREE_T));
   pt->next = NULL;
@@ -34,8 +46,23 @@ prefix_tree * init_prefix_tree(pt_type type) {
   return pt;
 }
 
-// prefix_tree * add_sequence(prefix_tree * head, void * stream, void * iterator(void *)) {
-// }
+prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
+    void * iterator(void *)) {
+  void * next_stream = NULL;
+  while((next_stream = iterator(stream)) != NULL)
+    head = append_tree(head, stream, next_stream);
+  return head;
+}
+
+prefix_tree * append_tree(prefix_tree * head, void * start, void * end) {
+  // prefix_tree * tmp = head;
+  // while(start < end) {
+  //   prefix_tree * branch = init_prefix_tree(head->type);
+  //   branch->prev = tmp;
+  //   start += sizeof_pt_type(head->type);
+  // }
+  return head;
+}
 
 void * words(void * value) {
   if(*(char *)value == '\0')
