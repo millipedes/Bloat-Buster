@@ -1,16 +1,5 @@
 #include "include/prefix_tree.h"
 
-const char * pt_type_to_string(pt_type type) {
-  switch(type) {
-    case UINT8_T:    return "uint8_t";
-    case UINT16_T:   return "uint16_t";
-    case UINT32_T:   return "uint32_t";
-    case UINT64_T:   return "uint64_t";
-    case CHAR:       return "char";
-    default:         return NULL;
-  }
-}
-
 size_t sizeof_pt_type(pt_type type) {
   switch(type) {
     case UINT8_T:    return sizeof(uint8_t);
@@ -47,52 +36,93 @@ prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
 prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     void * end) {
   prefix_tree * tmp = head;
+  int child_index = -1;
   while(start < end) {
-    prefix_tree * new_tail = init_prefix_tree(head->type);
+    if((child_index = value_in_children(tmp, start)) != -1) {
+      tmp = tmp->next[child_index];
+    } else {
+      prefix_tree * new_tail = init_prefix_tree(head->type);
 
-    // Alloc for New Child
-    tmp->qty_children++;
-    if(tmp->next)
-      tmp->next = realloc(tmp->next, tmp->qty_children
-          * sizeof(struct PREFIX_TREE_T *));
-    else
-      tmp->next = calloc(1, sizeof(struct PREFIX_TREE_T *));
+      // Alloc for New Child
+      tmp->qty_children++;
+      if(tmp->next)
+        tmp->next = realloc(tmp->next, tmp->qty_children
+            * sizeof(struct PREFIX_TREE_T *));
+      else
+        tmp->next = calloc(1, sizeof(struct PREFIX_TREE_T *));
 
-    // Link the List
-    tmp->next[tmp->qty_children - 1] = new_tail;
-    new_tail->prev = tmp;
+      // Link the List
+      tmp->next[tmp->qty_children - 1] = new_tail;
+      new_tail->prev = tmp;
 
-    // Assign new_tail's value
-    switch(head->type) {
-      case UINT8_T:
-        new_tail->value = calloc(1, sizeof(uint8_t));
-        *(uint8_t *)(new_tail->value) = *(uint8_t *)(start);
-        break;
-      case UINT16_T:
-        new_tail->value = calloc(1, sizeof(uint16_t));
-        *(uint16_t *)(new_tail->value) = *(uint16_t *)(start);
-        break;
-      case UINT32_T:
-        new_tail->value = calloc(1, sizeof(uint32_t));
-        *(uint32_t *)(new_tail->value) = *(uint32_t *)(start);
-        break;
-      case UINT64_T:
-        new_tail->value = calloc(1, sizeof(uint64_t));
-        *(uint64_t *)(new_tail->value) = *(uint64_t *)(start);
-        break;
-      case CHAR:
-        new_tail->value = calloc(1, sizeof(char));
-        *(char *)(new_tail->value) = *(char *)(start);
-        break;
-      default:
-        fprintf(stderr, "[APPEND_TREE]: Unrecognized Type\nExiting\n");
-        exit(1);
+      // Assign new_tail's value
+      switch(head->type) {
+        case UINT8_T:
+          new_tail->value = calloc(1, sizeof(uint8_t));
+          *(uint8_t *)(new_tail->value) = *(uint8_t *)(start);
+          break;
+        case UINT16_T:
+          new_tail->value = calloc(1, sizeof(uint16_t));
+          *(uint16_t *)(new_tail->value) = *(uint16_t *)(start);
+          break;
+        case UINT32_T:
+          new_tail->value = calloc(1, sizeof(uint32_t));
+          *(uint32_t *)(new_tail->value) = *(uint32_t *)(start);
+          break;
+        case UINT64_T:
+          new_tail->value = calloc(1, sizeof(uint64_t));
+          *(uint64_t *)(new_tail->value) = *(uint64_t *)(start);
+          break;
+        case CHAR:
+          new_tail->value = calloc(1, sizeof(char));
+          *(char *)(new_tail->value) = *(char *)(start);
+          break;
+        default:
+          fprintf(stderr, "[APPEND_TREE]: Unrecognized Type\nExiting\n");
+          exit(1);
+      }
+
+      tmp = new_tail;
     }
 
     start += sizeof_pt_type(tmp->type);
-    tmp = new_tail;
   }
   return head;
+}
+
+int value_in_children(prefix_tree * head, void * stream) {
+  if(head) {
+    if(head->next) {
+      for(int i = 0; i < (int)head->qty_children; i++) {
+        switch(head->type) {
+          case UINT8_T:
+            if(*(uint8_t *)(head->next[i]->value) == *(uint8_t *)stream)
+              return i;
+            break;
+          case UINT16_T:
+            if(*(uint16_t *)(head->next[i]->value) == *(uint16_t *)stream)
+              return i;
+            break;
+          case UINT32_T:
+            if(*(uint32_t *)(head->next[i]->value) == *(uint32_t *)stream)
+              return i;
+            break;
+          case UINT64_T:
+            if(*(uint64_t *)(head->next[i]->value) == *(uint64_t *)stream)
+              return i;
+            break;
+          case CHAR:
+            if(*(char *)(head->next[i]->value) == *(char *)stream)
+              return i;
+            break;
+          default:
+            fprintf(stderr, "[APPEND_TREE]: Unrecognized Type\nExiting\n");
+            exit(1);
+        }
+      }
+    } else return -1;
+  } else return -1;
+  return -1;
 }
 
 void * words(void * value) {

@@ -17,8 +17,6 @@ typedef enum {
   CHAR,
 } pt_type;
 
-int is_valid_pt_type(pt_type type);
-const char * pt_type_to_string(pt_type type);
 size_t sizeof_pt_type(pt_type type);
 
 typedef struct PREFIX_TREE_T {
@@ -34,6 +32,7 @@ prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
     void * iterator(void *));
 prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     void * end);
+int value_in_children(prefix_tree * head, void * stream);
 void debug_prefix_tree(prefix_tree * pt, int depth);
 void free_prefix_tree(prefix_tree * pt);
 
