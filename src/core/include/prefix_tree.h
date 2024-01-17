@@ -27,13 +27,14 @@ typedef struct PREFIX_TREE_T {
   struct PREFIX_TREE_T * prev;
   void * value;
   pt_type type;
-  uint16_t qty_children;
+  size_t qty_children;
 } prefix_tree;
 
 prefix_tree * init_prefix_tree(pt_type type);
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
     void * iterator(void *));
-prefix_tree * append_tree(prefix_tree * head, void * start, void * end);
+prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
+    void * end);
 void debug_prefix_tree(prefix_tree * pt, int depth);
 void free_prefix_tree(prefix_tree * pt);
 

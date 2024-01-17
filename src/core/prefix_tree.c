@@ -50,17 +50,54 @@ prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
     void * iterator(void *)) {
   void * next_stream = NULL;
   while((next_stream = iterator(stream)) != NULL)
-    head = append_tree(head, stream, next_stream);
+    head = process_stream_sequence(head, stream, next_stream);
   return head;
 }
 
-prefix_tree * append_tree(prefix_tree * head, void * start, void * end) {
-  // prefix_tree * tmp = head;
-  // while(start < end) {
-  //   prefix_tree * branch = init_prefix_tree(head->type);
-  //   branch->prev = tmp;
-  //   start += sizeof_pt_type(head->type);
-  // }
+prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
+    void * end) {
+  prefix_tree * tmp = head;
+  while(start > end) {
+    prefix_tree * new_tail = init_prefix_tree(head->type);
+
+    // Alloc for New Child
+    tmp->qty_children++;
+    if(tmp->next)
+      tmp->next = realloc(tmp->next, tmp->qty_children
+          * sizeof(struct PREFIX_TREE_T *));
+    else
+      tmp->next = calloc(1, sizeof(struct PREFIX_TREE_T *));
+
+    // Link the List
+    tmp->next[tmp->qty_children - 1] = new_tail;
+    new_tail->prev = tmp;
+
+    switch(head->type) {
+      case UINT8_T:
+        new_tail->value = calloc(1, sizeof(uint8_t));
+        *(uint8_t *)(new_tail->value) = *(uint8_t *)(start);
+        break;
+      case UINT16_T:
+        new_tail->value = calloc(1, sizeof(uint16_t));
+        *(uint16_t *)(new_tail->value) = *(uint16_t *)(start);
+        break;
+      case UINT32_T:
+        new_tail->value = calloc(1, sizeof(uint32_t));
+        *(uint32_t *)(new_tail->value) = *(uint32_t *)(start);
+        break;
+      case UINT64_T:
+        new_tail->value = calloc(1, sizeof(uint64_t));
+        *(uint64_t *)(new_tail->value) = *(uint64_t *)(start);
+        break;
+      case CHAR:
+        new_tail->value = calloc(1, sizeof(char));
+        *(char *)(new_tail->value) = *(char *)(start);
+        break;
+      default:
+        fprintf(stderr, "[APPEND_TREE]: Unrecognized Type\nExiting\n");
+        exit(1);
+    }
+  }
   return head;
 }
 
