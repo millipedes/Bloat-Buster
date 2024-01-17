@@ -15,12 +15,11 @@ typedef enum {
   UINT32_T,
   UINT64_T,
   CHAR,
-  END_OF_SEQ,
 } pt_type;
 
 int is_valid_pt_type(pt_type type);
 const char * pt_type_to_string(pt_type type);
-uint32_t sizeof_pt_type(pt_type type);
+size_t sizeof_pt_type(pt_type type);
 
 typedef struct PREFIX_TREE_T {
   struct PREFIX_TREE_T ** next;

@@ -1,17 +1,5 @@
 #include "include/prefix_tree.h"
 
-int is_valid_pt_type(pt_type type) {
-  switch(type) {
-    case UINT8_T:
-    case UINT16_T:
-    case UINT32_T:
-    case UINT64_T:
-    case CHAR:
-    case END_OF_SEQ: return 1;
-    default:         return 0;
-  }
-}
-
 const char * pt_type_to_string(pt_type type) {
   switch(type) {
     case UINT8_T:    return "uint8_t";
@@ -19,19 +7,17 @@ const char * pt_type_to_string(pt_type type) {
     case UINT32_T:   return "uint32_t";
     case UINT64_T:   return "uint64_t";
     case CHAR:       return "char";
-    case END_OF_SEQ: return "end of seq";
     default:         return NULL;
   }
 }
 
-uint32_t sizeof_pt_type(pt_type type) {
+size_t sizeof_pt_type(pt_type type) {
   switch(type) {
     case UINT8_T:    return sizeof(uint8_t);
     case UINT16_T:   return sizeof(uint16_t);
     case UINT32_T:   return sizeof(uint32_t);
     case UINT64_T:   return sizeof(uint64_t);
     case CHAR:       return sizeof(char);
-    case END_OF_SEQ:
     default:         return 0;
   }
 }
@@ -48,16 +34,18 @@ prefix_tree * init_prefix_tree(pt_type type) {
 
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
     void * iterator(void *)) {
-  void * next_stream = NULL;
-  while((next_stream = iterator(stream)) != NULL)
+  void * next_stream = stream;
+  while(next_stream != iterator(next_stream)) {
+    next_stream = iterator(next_stream);
     head = process_stream_sequence(head, stream, next_stream);
+  }
   return head;
 }
 
 prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     void * end) {
   prefix_tree * tmp = head;
-  while(start > end) {
+  while(start < end) {
     prefix_tree * new_tail = init_prefix_tree(head->type);
 
     // Alloc for New Child
@@ -72,6 +60,7 @@ prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     tmp->next[tmp->qty_children - 1] = new_tail;
     new_tail->prev = tmp;
 
+    // Assign new_tail's value
     switch(head->type) {
       case UINT8_T:
         new_tail->value = calloc(1, sizeof(uint8_t));
@@ -97,6 +86,9 @@ prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
         fprintf(stderr, "[APPEND_TREE]: Unrecognized Type\nExiting\n");
         exit(1);
     }
+
+    start += sizeof_pt_type(tmp->type);
+    tmp = new_tail;
   }
   return head;
 }
@@ -108,28 +100,29 @@ void * words(void * value) {
 }
 
 void * min_ptr(int count, ...) {
-    va_list args;
-    va_start(args, count);
-    void * min = va_arg(args, void *);
-    for(int i = 1; i < count; i++) {
-        void * current = va_arg(args, void *);
-        if (current < min)
-            min = current;
-    }
-    va_end(args);
-    return min;
+  va_list args;
+  va_start(args, count);
+  void * min = va_arg(args, void *);
+  for(int i = 1; i < count; i++) {
+    void * current = va_arg(args, void *);
+    if(current != NULL && current < min)
+      min = current;
+  }
+  va_end(args);
+  return min;
 }
 
 void debug_prefix_tree(prefix_tree * pt, int depth) {
   if(pt) {
     PRINT_C_N(SPACE, depth)
-    switch(pt->type) {
-      case UINT8_T:    printf("%u",  *((uint8_t  *)pt->value)); break;
-      case UINT16_T:   printf("%u",  *((uint16_t *)pt->value)); break;
-      case UINT32_T:   printf("%u",  *((uint32_t *)pt->value)); break;
-      case UINT64_T:   printf("%lu", *((uint64_t *)pt->value)); break;
-      case CHAR:       printf("%c",  *((char     *)pt->value)); break;
-      case END_OF_SEQ: printf("EOS");                           break;
+    if(pt->value) {
+      switch(pt->type) {
+        case UINT8_T:    printf("%u\n",  *((uint8_t  *)pt->value)); break;
+        case UINT16_T:   printf("%u\n",  *((uint16_t *)pt->value)); break;
+        case UINT32_T:   printf("%u\n",  *((uint32_t *)pt->value)); break;
+        case UINT64_T:   printf("%lu\n", *((uint64_t *)pt->value)); break;
+        case CHAR:       printf("%c\n",  *((char     *)pt->value)); break;
+      }
     }
     if(pt->next) {
       for(uint16_t i = 0; i < pt->qty_children; i++)
@@ -146,7 +139,6 @@ void free_prefix_tree(prefix_tree * pt) {
       case UINT32_T: free((uint32_t *)pt->value); break;
       case UINT64_T: free((uint64_t *)pt->value); break;
       case CHAR:     free((char     *)pt->value); break;
-      case END_OF_SEQ:                            break; // Nothing alloced
     }
     if(pt->next) {
       for(uint16_t i = 0; i < pt->qty_children; i++)
