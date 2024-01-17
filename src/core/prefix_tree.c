@@ -34,10 +34,12 @@ prefix_tree * init_prefix_tree(pt_type type) {
 
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
     void * iterator(void *)) {
+  void * current_stream = stream;
   void * next_stream = stream;
-  while(next_stream != iterator(next_stream)) {
+  while(next_stream != NULL) {
+    current_stream = next_stream;
     next_stream = iterator(next_stream);
-    head = process_stream_sequence(head, stream, next_stream);
+    head = process_stream_sequence(head, current_stream, next_stream);
   }
   return head;
 }
@@ -96,7 +98,9 @@ prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
 void * words(void * value) {
   if(*(char *)value == '\0')
     return NULL;
-  return min_ptr(2, strchr((char *)value, ' '), strchr((char *)value, '\n'));
+  void * space = strchr((char *)value, ' ');
+  void * new_line = strchr((char *)value, '\n');
+  return min_ptr(2, (space ? ++space : NULL), (new_line ? ++new_line : NULL));
 }
 
 void * min_ptr(int count, ...) {
