@@ -42,7 +42,4 @@ int value_in_children(prefix_tree * head, void * stream);
 void debug_prefix_tree(prefix_tree * pt, int depth);
 void free_prefix_tree(prefix_tree * pt);
 
-void * words(void * value);
-void * min_ptr(int count, ...);
-
 #endif
