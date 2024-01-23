@@ -69,4 +69,7 @@ And just like that we call:
 ```
 head = read_stream_to_prefix_tree(head, "Hello World\nHilbert Worms Work", words);
 ```
-And we have the string separated out by words.
+And we have the string separated out by words. Don't forget to free:
+```
+free_prefix_tree(head);
+```
