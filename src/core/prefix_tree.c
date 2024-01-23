@@ -131,7 +131,13 @@ prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
 }
 
 /**
- * This function will determine if a particular 
+ * This function will determine if a particular value is in the immediate child
+ * of a prefix tree, if it is then it will return the int index of that child
+ * otherwise it will return -1.
+ * @param   head - The head of the prefix_tree to check children of.
+ * @param stream - The stream to check against.
+ * @return    -1 - Not Found.
+ *          else - Found.
  */
 int value_in_children(prefix_tree * head, void * stream) {
   if(head) {
@@ -166,27 +172,6 @@ int value_in_children(prefix_tree * head, void * stream) {
     } else return -1;
   } else return -1;
   return -1;
-}
-
-void * words(void * value) {
-  if(*(char *)value == '\0')
-    return NULL;
-  void * space = strchr((char *)value, ' ');
-  void * new_line = strchr((char *)value, '\n');
-  return min_ptr(2, (space ? ++space : NULL), (new_line ? ++new_line : NULL));
-}
-
-void * min_ptr(int count, ...) {
-  va_list args;
-  va_start(args, count);
-  void * min = va_arg(args, void *);
-  for(int i = 1; i < count; i++) {
-    void * current = va_arg(args, void *);
-    if(current != NULL && current < min)
-      min = current;
-  }
-  va_end(args);
-  return min;
 }
 
 void debug_prefix_tree(prefix_tree * pt, int depth) {

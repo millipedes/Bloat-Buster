@@ -1,11 +1,9 @@
 #ifndef PREFIX_TREE_H
 #define PREFIX_TREE_H
 
-#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "main/include/constants_macros.h"
 

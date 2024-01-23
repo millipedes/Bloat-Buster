@@ -6,6 +6,8 @@ set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(TEST_DIR "${CMAKE_SOURCE_DIR}/tests")
 set(SRC_FILES
     ${SRC_DIR}/core/prefix_tree.c
+    ${SRC_DIR}/core/string_lib.c
+    ${SRC_DIR}/core/pointer_arithmetic.c
     ${SRC_DIR}/file/file_graph.c
 )
 
