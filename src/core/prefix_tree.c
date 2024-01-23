@@ -1,5 +1,20 @@
-#include "include/prefix_tree.h"
+/**
+ * @file   prefix_tree.c
+ * @brief  This file contains the functions related building/mainting the
+ * prefix_tree.
+ * @author Matthew C. Lindeman
+ * @date   January 22, 2023
+ * @bug    None known
+ * @todo   None Atm
+ */#include "include/prefix_tree.h"
 
+/**
+ * This function will return the type of a particular prefix_tree type. This is
+ * helpful with the pointer arithmetic.
+ * @param type - The type of the prefix_tree which the user wishes to find size
+ * of.
+ * @return  .\ - The size of the given type.
+ */
 size_t sizeof_pt_type(pt_type type) {
   switch(type) {
     case UINT8_T:    return sizeof(uint8_t);
@@ -11,6 +26,12 @@ size_t sizeof_pt_type(pt_type type) {
   }
 }
 
+/**
+ * This function will initialize an empty prefix_tree with no members of the
+ * given type.
+ * @param type - The type to initialize the tree to.
+ * @return  pt - The newly initialized prefix_tree.
+ */
 prefix_tree * init_prefix_tree(pt_type type) {
   prefix_tree * pt = calloc(1, sizeof(struct PREFIX_TREE_T));
   pt->next = NULL;
@@ -21,6 +42,17 @@ prefix_tree * init_prefix_tree(pt_type type) {
   return pt;
 }
 
+/**
+ * This function will take a head of a given prefix_tree and make a prefix_tree
+ * from it given a stream and an iterator.  N.B. This iterator ought to return
+ * the first character in the next desired start of the stream and NULL when the
+ * parsing has reached its end.
+ * @param     head - The head of the prefix_tree the user wishes to build.
+ * @param   stream - The start of the stream which the user wishes to parse.
+ * @param iterator - The iterator which ought to return the first occurance of
+ * the next desired parse character.
+ * @return    head - The newly built parse tree.
+ */
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
     void * iterator(void *)) {
   void * current_stream = stream;
@@ -33,6 +65,14 @@ prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
   return head;
 }
 
+/**
+ * This function will process the stream from start to end with the given head
+ * of the parse tree.
+ * @param  head - The head of the parse tree.
+ * @param start - The start of the subsequence of the stream.
+ * @param   end - The end of the subsequence of the stream.
+ * @return head - The head of the newly formed parse tree.
+ */
 prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     void * end) {
   prefix_tree * tmp = head;
@@ -90,6 +130,9 @@ prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
   return head;
 }
 
+/**
+ * This function will determine if a particular 
+ */
 int value_in_children(prefix_tree * head, void * stream) {
   if(head) {
     if(head->next) {
