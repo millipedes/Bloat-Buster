@@ -1,3 +1,11 @@
+/**
+ * @file   prefix_tree.h
+ * @brief  This file contains the function definitions for prefix_tree.c.
+ * @author Matthew C. Lindeman
+ * @date   January 22, 2024
+ * @bug    None Known.
+ * @todo   None Atm.
+ */
 #ifndef PREFIX_TREE_H
 #define PREFIX_TREE_H
 

@@ -1,18 +1,19 @@
 /**
  * @file   prefix_tree.c
  * @brief  This file contains the functions related building/mainting the
- * prefix_tree.
+ *         prefix_tree.
  * @author Matthew C. Lindeman
- * @date   January 22, 2023
- * @bug    None known
- * @todo   None Atm
- */#include "include/prefix_tree.h"
+ * @date   January 22, 2024
+ * @bug    None Known.
+ * @todo   None Atm.
+ */
+#include "include/prefix_tree.h"
 
 /**
  * This function will return the type of a particular prefix_tree type. This is
  * helpful with the pointer arithmetic.
  * @param type - The type of the prefix_tree which the user wishes to find size
- * of.
+ *               of.
  * @return  .\ - The size of the given type.
  */
 size_t sizeof_pt_type(pt_type type) {
@@ -50,7 +51,7 @@ prefix_tree * init_prefix_tree(pt_type type) {
  * @param     head - The head of the prefix_tree the user wishes to build.
  * @param   stream - The start of the stream which the user wishes to parse.
  * @param iterator - The iterator which ought to return the first occurance of
- * the next desired parse character.
+ *                   the next desired parse character.
  * @return    head - The newly built parse tree.
  */
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
@@ -174,6 +175,14 @@ int value_in_children(prefix_tree * head, void * stream) {
   return -1;
 }
 
+/**
+* This function is used to debug a particular prefix_tree.
+* @param    pt - The prefix_tree which the user wishes to debug.
+* @param depth - The qty of spaces to be printed before the data of the
+*                prefix_tree (i.e. the user can see parent/children easier this
+*                way).
+* @return  N/a
+*/
 void debug_prefix_tree(prefix_tree * pt, int depth) {
   if(pt) {
     PRINT_C_N(SPACE, depth)
@@ -193,6 +202,11 @@ void debug_prefix_tree(prefix_tree * pt, int depth) {
   }
 }
 
+/**
+* This function will free a given prefix_tree.
+* @param   pt - The prefix_tree to be freed.
+* @return N/a
+*/
 void free_prefix_tree(prefix_tree * pt) {
   if(pt) {
     switch(pt->type) {
