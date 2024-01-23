@@ -37,7 +37,7 @@ prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     void * end) {
   prefix_tree * tmp = head;
   int child_index = -1;
-  while(start < end) {
+  while(end != NULL && start < end - sizeof_pt_type(head->type)) {
     if((child_index = value_in_children(tmp, start)) != -1) {
       tmp = tmp->next[child_index];
     } else {
