@@ -55,12 +55,14 @@ prefix_tree * init_prefix_tree(pt_type type) {
  * @return    head - The newly built parse tree.
  */
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
-    void * iterator(void *)) {
+    void * back(void *), void * front(void *)) {
   void * current_stream = stream;
   void * next_stream = stream;
-  while(next_stream != NULL) {
-    current_stream = next_stream;
-    next_stream = iterator(next_stream);
+  while(next_stream != NULL && current_stream != NULL) {
+    current_stream = back(next_stream);
+    next_stream = front(next_stream);
+    if(current_stream == NULL || next_stream == NULL)
+      break;
     head = process_stream_sequence(head, current_stream, next_stream);
   }
   return head;
@@ -176,13 +178,13 @@ int value_in_children(prefix_tree * head, void * stream) {
 }
 
 /**
-* This function is used to debug a particular prefix_tree.
-* @param    pt - The prefix_tree which the user wishes to debug.
-* @param depth - The qty of spaces to be printed before the data of the
-*                prefix_tree (i.e. the user can see parent/children easier this
-*                way).
-* @return  N/a
-*/
+ * This function is used to debug a particular prefix_tree.
+ * @param    pt - The prefix_tree which the user wishes to debug.
+ * @param depth - The qty of spaces to be printed before the data of the
+ *                prefix_tree (i.e. the user can see parent/children easier this
+ *                way).
+ * @return  N/a
+ */
 void debug_prefix_tree(prefix_tree * pt, int depth) {
   if(pt) {
     PRINT_C_N(SPACE, depth)
@@ -203,10 +205,10 @@ void debug_prefix_tree(prefix_tree * pt, int depth) {
 }
 
 /**
-* This function will free a given prefix_tree.
-* @param   pt - The prefix_tree to be freed.
-* @return N/a
-*/
+ * This function will free a given prefix_tree.
+ * @param   pt - The prefix_tree to be freed.
+ * @return N/a
+ */
 void free_prefix_tree(prefix_tree * pt) {
   if(pt) {
     switch(pt->type) {

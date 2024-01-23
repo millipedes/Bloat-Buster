@@ -35,7 +35,7 @@ typedef struct PREFIX_TREE_T {
 
 prefix_tree * init_prefix_tree(pt_type type);
 prefix_tree * read_stream_to_prefix_tree(prefix_tree * head, void * stream,
-    void * iterator(void *));
+    void * back(void *), void * front(void *));
 prefix_tree * process_stream_sequence(prefix_tree * head, void * start,
     void * end);
 int value_in_children(prefix_tree * head, void * stream);
